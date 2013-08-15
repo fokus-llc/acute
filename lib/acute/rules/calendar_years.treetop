@@ -1,0 +1,98 @@
+
+module Acute::Rules
+  grammar CalendarYears
+
+    rule precise_fractional_year
+      fraction_node:fraction
+      year_node:precise_year
+      <Acute::Nodes::YearFragmentNode>
+    end
+
+    rule precise_year
+      year_number_node:natural_number
+      era_affix:year_affixed_era?
+      style_affix:year_affixed_style?
+      <Acute::Nodes::YearNode>
+    end
+
+    rule year_affixed_era
+      year_era_separator era:calendar_era
+    end
+
+    rule year_affixed_style
+      required_hspace style:calendar_style
+    end
+
+    rule calendar_era
+      era_bc / era_ad / era_bce / era_ce
+    end
+
+    rule era_bc
+      "b" abbreviated? optional_hspace "c" abbreviated?
+      { def value; "bce"; end }
+    end
+
+    rule era_bce
+      "b" abbreviated? optional_hspace
+      "c" abbreviated? optional_hspace "e" abbreviated?
+      { def value; "bce"; end }
+    end
+
+    rule era_ce
+      "c" abbreviated? optional_hspace "e" abbreviated?
+      { def value; "ce"; end }
+    end
+
+    rule era_ad
+      "a" abbreviated? optional_hspace "d" abbreviated?
+      { def value; "ce"; end }
+    end
+
+    ####
+
+    rule calendar_style
+      style_old / style_new
+    end
+
+    rule style_old
+      style_old_bare /
+      style_old_brackets
+    end
+
+    rule style_old_bare
+      "o" abbreviated? "s" abbreviated?
+      { def value; "os"; end }
+    end
+
+    rule style_old_brackets
+      open_bracket style_old_bare close_bracket
+      { def value; "os"; end }
+    end
+
+    rule style_new
+      style_new_bare /
+      style_new_brackets
+    end
+
+    rule style_new_bare
+      "n" abbreviated? "s" abbreviated?
+      { def value; "ns"; end }
+    end
+
+    rule style_new_brackets
+      open_bracket style_new_bare close_bracket
+      { def value; "ns"; end }
+    end
+
+    rule style_new_bare
+      "n" abbreviated? "s" abbreviated?
+      { def value; "ns"; end }
+    end
+
+    rule year_era_separator
+      optional_hspace [,-] optional_hspace / required_hspace
+    end
+
+  end
+end
+

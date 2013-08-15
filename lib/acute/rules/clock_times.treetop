@@ -1,0 +1,109 @@
+
+module Acute::Rules
+  grammar ClockTimes
+
+    rule repeating_time
+      clock_time_node:( named_time / clock_time_12 / clock_time_24 )
+      optional_hspace
+      zone_node:time_zone?
+      <Acute::Nodes::RepeatingTimeNode>
+    end
+
+    rule named_time
+      time_noon / time_midnight
+    end
+
+    rule time_noon
+      "noon"
+      { def value; "12:00:00"; end }
+    end
+
+    rule time_midnight
+      "mid" "-"? "night"
+      { def value; "00:00:00"; end }
+    end
+
+    rule clock_time_12
+      hour:clock_lte_12 ":"? mins:clock_lt_sixty? ":"? secs:clock_lt_sixty?
+      optional_hspace clock_meridian
+      {
+        def value
+          meridian_offset = clock_meridian ? clock_meridian.offset_hours : 0
+          if (hour_value = hour.value) == 12
+            hour_value = (meridian_offset == 0) ? 0 : 12
+          else
+            hour_value += meridian_offset
+          end
+
+          "%02d:%02d:%02d" % [
+            hour_value,
+            mins.empty? ? 0 : mins.value,
+            secs.empty? ? 0 : secs.value
+          ]
+        end
+      }
+    end
+
+    rule clock_time_24
+      hour:clock_lt_24 ":" mins:clock_lt_sixty ":"? secs:clock_lt_sixty?
+      {
+        def value
+          "%02d:%02d:%02d" % [
+            hour.value,
+            mins.value,
+            secs.empty? ? 0 : secs.value
+          ]
+        end
+      }
+    end
+
+    rule clock_lt_24
+      clock_20_to_23 / clock_10_to_19 / clock_1_to_9
+    end
+
+    rule clock_lte_12
+      clock_10_to_12 / clock_1_to_9
+    end
+
+    rule clock_1_to_9
+      '0'? [1-9]
+      { def value; text_value.to_i; end }
+    end
+
+    rule clock_10_to_12
+      '1' [0-2]
+      { def value; text_value.to_i; end }
+    end
+
+    rule clock_10_to_19
+      '1' [0-9]
+      { def value; text_value.to_i; end }
+    end
+
+    rule clock_20_to_23
+      '2' [0-3]
+      { def value; text_value.to_i; end }
+    end
+
+    rule clock_lt_sixty
+      [0-5] [0-9]
+      { def value; text_value.to_i; end }
+    end
+
+    rule clock_meridian
+      clock_am / clock_pm
+    end
+
+    rule clock_am
+      "a" ( abbreviated? optional_hspace "m" abbreviated? )?
+      { def offset_hours; 0; end }
+    end
+
+    rule clock_pm
+      "p" ( abbreviated? optional_hspace "m" abbreviated? )?
+      { def offset_hours; 12; end }
+    end
+
+  end
+end
+

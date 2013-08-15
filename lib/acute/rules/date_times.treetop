@@ -1,0 +1,18 @@
+
+module Acute::Rules
+  grammar DateTimes
+
+    rule precise_time
+      repeating_time_node:repeating_time
+      time_date_separator
+      date_node:precise_date
+      <Acute::Nodes::DateTimeNode>
+    end
+
+    rule time_date_separator
+      conjunction_on / conjunction_comma / required_hspace
+    end
+
+  end
+end
+

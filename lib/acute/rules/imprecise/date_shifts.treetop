@@ -1,0 +1,78 @@
+
+module Acute::Rules::Imprecise
+  grammar DateShifts
+
+    rule qualified_fractional_shift
+      precise_fractional_shift /
+      imprecise_fractional_shift_of_date /
+      imprecise_fractional_shift
+    end
+
+    rule imprecise_fractional_shift_of_date
+      fractional_shift_node:imprecise_repeating_fractional_shift
+      shift_date_separator
+      date_node:precise_date
+      <Acute::Nodes::ShiftFragmentNode>
+      {
+        def precision; :date; end
+      }
+    end
+
+    rule imprecise_fractional_shift
+      open_parens imprecise:precise_fractional_shift close_parens
+      <Acute::Nodes::ShiftFragmentNode>
+      {
+        def fractional_shift_node; imprecise.fractional_shift_node; end
+        def date_node; imprecise.date_node; end
+        def precision; nil; end
+      }
+    end
+
+    ####
+
+    rule imprecise_repeating_fractional_shift
+      open_parens imprecise:precise_repeating_fractional_shift close_parens
+      {
+        def fraction_node; imprecise.fraction_node; end
+        def repeating_shift_node; imprecise.repeating_shift_node; end
+      }
+    end
+
+    ####
+
+    rule qualified_shift
+      precise_shift /
+      imprecise_shift_of_date /
+      imprecise_shift
+    end
+
+    rule imprecise_shift_of_date
+      repeating_shift_node:imprecise_repeating_shift
+      shift_date_separator
+      date_node:precise_date
+      <Acute::Nodes::DateShiftNode>
+      {
+        def precision; :date; end
+      }
+    end
+
+    rule imprecise_shift
+      open_parens imprecise:precise_shift close_parens
+      <Acute::Nodes::DateShiftNode>
+      {
+        def repeating_shift_node; imprecise.repeating_shift_node; end
+        def date_node; imprecise.date_node; end
+        def precision; nil; end
+      }
+    end
+
+    rule imprecise_repeating_shift
+      open_parens imprecise:precise_repeating_shift close_parens
+      {
+        def value; imprecise.value; end
+      }
+    end
+
+  end
+end
+

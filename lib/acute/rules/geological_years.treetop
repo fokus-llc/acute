@@ -1,0 +1,87 @@
+
+module Acute::Rules
+  grammar GeologicalYears
+
+    rule geological_year
+      quantified_geological_year /
+      compact_geological_year /
+      verbose_geological_year
+    end
+
+    rule quantified_geological_year
+      year_number_node:geological_quantified_magnitude
+      required_hspace
+      (era_bp / era_bp_verbose)
+      <Acute::Nodes::GeologicalYearNode>
+    end
+
+    rule quantified_verbose_geological_year
+      year_number_node:geological_quantified_magnitude
+      required_hspace
+      era_bp_verbose
+      <Acute::Nodes::GeologicalYearNode>
+    end
+
+    rule compact_geological_year
+      year_number_node:geological_number
+      optional_hspace
+      era_bp
+      <Acute::Nodes::GeologicalYearNode>
+    end
+
+    rule verbose_geological_year
+      year_number_node:geological_number
+      required_hspace
+      era_bp_verbose
+      <Acute::Nodes::GeologicalYearNode>
+    end
+
+    rule geological_quantified_magnitude
+      natural_number space_or_dash geological_magnitude
+      { def value; natural_number.to_i * geological_magnitude.factor; end }
+    end
+
+    rule geological_magnitude
+      magnitude_million / magnitude_billion / magnitude_trillion
+    end
+
+    rule magnitude_million
+      "million" { def factor; 1_000_000; end }
+    end
+
+    rule magnitude_billion # "short" scale
+      "billion" { def factor; 1_000_000_000; end }
+    end
+
+    rule magnitude_trillion
+      "trillion" { def factor; 1_000_000_000_000; end }
+    end
+
+    rule geological_number
+      natural_number_gte_100 / natural_number_commified
+    end
+
+    rule era_bp
+      "b" abbreviated? "p" abbreviated?
+      { def value; "bp"; end }
+    end
+
+    rule era_bp_verbose
+      "years" required_hspace
+      ( "ago"  / era_bp / "before" required_hspace "present" )
+      { def value; "bp"; end }
+    end
+
+    rule natural_number_gte_100
+      [1-9]+ [0-9] 2..
+      <Acute::Nodes::IntegerNode>
+    end
+
+    rule natural_number_commified
+      [1-9] [0-9] ..2 ( "," [0-9] 3..3 )+ ![0-9]
+      <Acute::Nodes::CommifiedIntegerNode>
+    end
+
+  end
+end
+

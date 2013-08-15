@@ -1,0 +1,44 @@
+
+module Acute::Rules::Imprecise
+  grammar CalendarYear
+
+    rule qualified_year
+      precise_year / imprecise_year
+    end
+
+    rule imprecise_year
+      open_parens
+      imprecise:precise_year
+      close_parens
+      <Acute::Nodes::YearNode>
+      {
+        def year_number_node; imprecise.year_number_node; end
+        def era_affix; imprecise.era_affix; end
+        def style_affix; imprecise.style_affix; end
+        def precise?; false; end
+
+        def precision; nil; end
+      }
+    end
+
+    ####
+
+    rule qualified_fractional_year
+      precise_fractional_year / imprecise_fractional_year
+    end
+
+    rule imprecise_fractional_year
+      open_parens imprecise:precise_fractional_year close_parens
+      <Acute::Nodes::YearFragmentNode>
+      {
+        def year_node; imprecise.year_node; end
+        def fraction_node; imprecise.fraction_node; end
+        def precise?; false; end
+
+        def precision; nil; end
+      }
+    end
+
+  end
+end
+

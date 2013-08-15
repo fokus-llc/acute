@@ -1,0 +1,154 @@
+
+module Acute::Rules
+  grammar Dates
+
+    rule precise_date
+      repeating_date_node:precise_repeating_date
+      date_year_separator
+      year_node:precise_year
+      <Acute::Nodes::DateNode>
+    end
+
+    ####
+
+    rule precise_repeating_date
+      precise_repeating_date_long_month /
+      precise_repeating_date_short_month /
+      precise_repeating_date_february
+    end
+
+    ####
+
+    rule precise_repeating_date_long_month
+      month_node:calendar_long_month
+      month_day_separator
+      day_number_node:precise_day_of_long_month
+      <Acute::Nodes::RepeatingDateNode>
+    end
+
+    rule precise_repeating_date_short_month
+      month_node:calendar_short_month
+      month_day_separator
+      day_number_node:precise_day_of_short_month
+      <Acute::Nodes::RepeatingDateNode>
+    end
+
+    rule precise_repeating_date_february
+      month_node:calendar_short_month
+      month_day_separator
+      day_number_node:precise_day_of_short_month
+      <Acute::Nodes::RepeatingDateNode>
+    end
+
+    ####
+
+    rule precise_day_of_long_month
+      day_ordinal_of_long_month / day_number_of_long_month
+    end
+
+    rule precise_day_of_short_month
+      day_ordinal_of_short_month / day_number_of_short_month
+    end
+
+    rule precise_day_of_february
+      day_ordinal_of_february / day_number_of_february
+    end
+
+    ####
+
+    rule day_ordinal_of_long_month
+      day_ordinal_long_thirties /
+      day_ordinal_tens_and_twenties /
+      day_ordinal_oughts
+    end
+
+    rule day_number_of_long_month
+      ( ( "3" [01] ) / ( [21] [0-9] ) / ( "0"? [1-9] ) ) ![0-9]
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_of_short_month
+      day_ordinal_thirty /
+      day_ordinal_tens_and_twenties /
+      day_ordinal_oughts
+    end
+
+    rule day_number_of_short_month
+      ( "30" / ( [21] [0-9] ) / ( "0"? [1-9] ) ) ![0-9]
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_of_february
+      day_ordinal_tens_and_twenties /
+      day_ordinal_oughts
+    end
+
+    rule day_number_of_february
+      ( ( [21] [0-9] ) / ( "0"? [1-9] ) ) ![0-9]
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_long_thirties
+      "3" ( ordinal_0 / ordinal_1 )
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_thirty
+      ( "3" ordinal_0 )
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_tens_and_twenties
+      ( [21] ordinal_0_to_9 )
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule day_ordinal_oughts
+      ordinal_1_to_9 '' # instantiate class
+      <Acute::Nodes::MonthDayNumberNode>
+    end
+
+    rule ordinal_0_to_9
+      ordinal_0 / ordinal_1_to_9
+    end
+
+    rule ordinal_0
+      "0th"
+    end
+
+    rule ordinal_1_to_9
+      ordinal_1 / ordinal_2 / ordinal_3 / ordinal_4_to_9
+    end
+
+    rule ordinal_1
+      "1st"
+    end
+
+    rule ordinal_2
+      "2nd"
+    end
+
+    rule ordinal_3
+      "3rd"
+    end
+
+    rule ordinal_4_to_9
+      [4-9] "th"
+    end
+
+    ####
+
+    rule date_year_separator
+      optional_hspace [/,-] optional_hspace / required_hspace
+    end
+
+    rule month_day_separator
+      required_hspace
+    end
+
+
+
+  end
+end
+
+

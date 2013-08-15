@@ -1,0 +1,31 @@
+
+require 'treetop'
+
+module Acute::Rules
+  grammar TimeZones
+
+    rule time_zone
+      time_zone_offset / time_zone_utc / time_zone_us
+    end
+
+    rule time_zone_offset
+      operator:( "+" / "-" )
+      hours:( "1" [0-4] / "0" [1-9] )
+      ":"
+      mins:( "00" / "30" / "45" )
+      { def value; text_value; end }
+    end
+
+    rule time_zone_utc
+      "u" abbreviated? "t" abbreviated? "c" abbreviated? ![a-z]
+      { def value; "utc"; end }
+    end
+
+    rule time_zone_us
+      [pmce] abbreviated? [sd] abbreviated? "t" abbreviated? ![a-z]
+      { def value; text_value.gsub(/[^a-z]/,''); end }
+    end
+
+  end
+end
+

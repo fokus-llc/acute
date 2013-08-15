@@ -1,0 +1,81 @@
+
+module Acute::Rules::Imprecise
+  grammar Months
+
+    rule qualified_month
+      precise_month / imprecise_month_of_year / imprecise_month
+    end
+
+    rule imprecise_month_of_year
+      imprecise:imprecise_repeating_month
+      month_year_separator
+      year_node:precise_year
+      <Acute::Nodes::MonthNode>
+      {
+        def repeating_month_node; imprecise.repeating_month_node; end
+        def precision; :year; end
+      }
+    end
+
+    rule imprecise_month
+      open_parens imprecise:precise_month close_parens
+      <Acute::Nodes::MonthNode>
+      {
+        def repeating_month_node; imprecise.repeating_month_node; end
+        def year_node; imprecise.year_node; end
+        def precision; nil; end
+      }
+    end
+
+    ####
+
+    rule qualified_repeating_month
+      precise_repeating_month / imprecise_repeating_month
+    end
+
+    rule imprecise_repeating_month
+      open_parens repeating_month_node:precise_repeating_month close_parens
+    end
+
+    ####
+
+    rule qualified_fractional_month
+      precise_fractional_month /
+      imprecise_fractional_month_of_year /
+      imprecise_fractional_month
+    end
+
+    rule imprecise_fractional_month_of_year
+      fractional_month_node:imprecise_repeating_fractional_month
+      month_year_separator
+      year_node:precise_year
+      <Acute::Nodes::MonthFragmentNode>
+      {
+        def precision; :year; end
+      }
+    end
+
+    rule imprecise_fractional_month
+      open_parens imprecise:precise_fractional_month close_parens
+      <Acute::Nodes::MonthFragmentNode>
+      {
+        def fractional_month_node; imprecise.fractional_month_node; end
+        def year_node; imprecise.year_node; end
+        def precision; nil; end
+      }
+    end
+
+    ####
+
+    rule imprecise_repeating_fractional_month
+      open_parens imprecise:precise_repeating_fractional_month close_parens
+      {
+        def fraction_node; imprecise.fraction_node; end
+        def repeating_month_node; imprecise.repeating_month_node; end
+      }
+    end
+
+  end
+end
+
+

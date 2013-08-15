@@ -1,0 +1,8 @@
+= acute
+
+A historical date parser
+
+== Copyright
+
+Copyright (c) 2013 Fokus LLC. See LICENSE.txt for further details.
+

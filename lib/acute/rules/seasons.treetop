@@ -1,0 +1,116 @@
+
+module Acute::Rules
+  grammar Seasons
+
+    rule precise_fractional_season
+      fractional_season_node:precise_repeating_fractional_season
+      season_year_separator
+      year_node:precise_year
+      <Acute::Nodes::SeasonFragmentNode>
+    end
+
+    rule precise_repeating_fractional_season
+      fraction_node:fraction repeating_season_node:precise_repeating_season
+    end
+
+    ####
+
+    rule precise_season
+      repeating_season_node:precise_repeating_season
+      season_year_separator
+      year_node:precise_year
+      <Acute::Nodes::SeasonNode>
+    end
+
+    rule precise_repeating_season
+      repeating_hemispheric_season / repeating_holospheric_season
+    end
+
+    rule repeating_hemispheric_season
+      hemisphere_node:season_hemisphere
+      hemisphere_season_separator
+      name:repeating_season
+    end
+
+    rule repeating_holospheric_season
+      name:repeating_season hemisphere_node:''
+    end
+
+    rule repeating_season
+      calendar_spring / calendar_summer / calendar_autumn / calendar_winter
+    end
+
+    rule season_hemisphere
+      northern_hemisphere / southern_hemisphere
+    end
+
+    rule northern_hemisphere
+      northern_hemisphere_verbose / northern_hemisphere_terse
+    end
+
+    rule northern_hemisphere_verbose
+      "northern"
+      { def value; "northern"; end }
+    end
+
+    rule northern_hemisphere_terse
+      "n" abbreviated? "h" abbreviated?
+      { def value; "northern"; end }
+    end
+
+    rule southern_hemisphere
+      southern_hemisphere_verbose / southern_hemisphere_terse
+    end
+
+    rule southern_hemisphere_verbose
+      "southern"
+      { def value; "southern"; end }
+    end
+
+    rule southern_hemisphere_terse
+      "s" abbreviated? "h" abbreviated?
+      { def value; "southern"; end }
+    end
+
+    rule calendar_spring
+      "spring"
+      { def value; "spring"; end }
+    end
+
+    rule calendar_summer
+      "summer"
+      { def value; "summer"; end }
+    end
+
+    rule calendar_autumn
+      calendar_autumn_literal / calendar_autumn_fall
+    end
+
+    rule calendar_autumn_literal
+      "autumn"
+      { def value; "autumn"; end }
+    end
+
+    rule calendar_autumn_fall
+      "fall"
+      { def value; "autumn"; end }
+    end
+
+    rule calendar_winter
+      "winter"
+      { def value; "winter"; end }
+    end
+
+    ####
+
+    rule hemisphere_season_separator
+      optional_hspace [-] optional_hspace / required_hspace
+    end
+
+    rule season_year_separator
+      optional_hspace [,-] optional_hspace / required_hspace
+    end
+
+  end
+end
+

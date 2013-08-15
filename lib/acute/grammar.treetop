@@ -1,0 +1,133 @@
+
+require 'treetop'
+
+require 'acute/nodes'
+require 'acute/rules'
+
+module Acute
+  grammar Grammar
+
+    rule root
+      lexemes
+    end
+
+    rule lexemes
+      lexeme*
+    end
+
+    include Rules::ClockTimes
+    include Rules::TimeZones
+
+    include Rules::Fragments
+
+    include Rules::GeologicalYears
+    include Rules::CalendarYears
+    include Rules::Seasons
+    include Rules::Months
+    include Rules::Dates
+    include Rules::DateShifts
+    include Rules::DateTimes
+
+    include Rules::Imprecision
+
+    rule lexeme
+      qualified_temporal_expression / unparsed
+    end
+
+    rule qualified_temporal_expression
+      qualified_time /
+      qualified_fractional_shift /
+      qualified_shift /
+      qualified_date /
+      qualified_fractional_month /
+      qualified_month /
+      qualified_fractional_season /
+      qualified_season /
+      qualified_fractional_year /
+      geological_year /
+      qualified_year
+    end
+
+    rule unparsed
+      morpheme / number / punctuation / whitespace
+    end
+
+    ####
+
+    rule conjunction_comma
+      optional_hspace "," optional_hspace
+    end
+
+    rule conjunction_on
+      required_hspace "on" required_hspace
+    end
+
+    rule conjunction_dash
+      optional_hspace "-" optional_hspace
+    end
+
+    rule abbreviated
+      optional_hspace "."
+    end
+
+    rule space_or_dash
+      conjunction_dash / required_hspace
+    end
+
+    rule open_parens
+      "(" optional_hspace
+    end
+
+    rule close_parens
+      optional_hspace ")"
+    end
+
+    rule open_bracket
+      "[" optional_hspace
+    end
+
+    rule close_bracket
+      optional_hspace "]"
+    end
+
+    rule natural_number # no zero
+      [1-9]+ [0-9]*
+      <Acute::Nodes::IntegerNode>
+    end
+
+    rule number
+      [0-9]+
+      <Acute::Nodes::IntegerNode>
+    end
+
+    rule whitespace
+      ( hspace+ / vspace+ )+
+    end
+
+    rule optional_hspace
+      hspace*
+    end
+
+    rule required_hspace
+      hspace+
+    end
+
+    rule hspace
+      [ \t]
+    end
+
+    rule vspace
+      [\r\n]+
+    end
+
+    rule punctuation
+      [^a-z0-9 \t\r\n]
+    end
+
+    rule morpheme
+      [a-z]+
+    end
+
+  end
+end
+

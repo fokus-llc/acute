@@ -1,0 +1,167 @@
+
+module Acute::Rules::Imprecise
+  grammar Dates
+
+    rule qualified_date
+      precise_date /
+      imprecise_day_date /
+      imprecise_month_and_day_date /
+      imprecise_date
+    end
+
+    rule imprecise_day_date
+      repeating_date_node:imprecise_day_repeating_date
+      date_year_separator
+      year_node:precise_year
+      <Acute::Nodes::DateNode>
+      {
+        def precision; :month; end
+      }
+    end
+
+    rule imprecise_month_and_day_date
+      imprecise:imprecise_repeating_date
+      date_year_separator
+      year_node:precise_year
+      <Acute::Nodes::DateNode>
+      {
+        def precision; :year; end
+        def repeating_date_node; imprecise.repeating_date_node; end
+      }
+    end
+
+    rule imprecise_date
+      open_parens
+      imprecise:precise_date
+      close_parens
+      <Acute::Nodes::DateNode>
+      {
+        def year_node; imprecise.year_node; end
+        def repeating_date_node; imprecise.repeating_date_node; end
+        def precision; nil; end
+      }
+    end
+
+    ####
+
+    rule qualified_repeating_date
+      qualified_repeating_date_long_month /
+      qualified_repeating_date_short_month /
+      qualified_repeating_date_february
+    end
+
+    rule qualified_repeating_date_long_month
+      precise_repeating_date_long_month /
+      imprecise_day_repeating_date_long_month /
+      imprecise_repeating_date_long_month
+    end
+
+    rule qualified_repeating_date_short_month
+      precise_repeating_date_short_month /
+      imprecise_day_repeating_date_short_month /
+      imprecise_repeating_date_short_month
+    end
+
+    rule qualified_repeating_date_february
+      precise_repeating_date_february /
+      imprecise_day_repeating_date_february /
+      imprecise_repeating_date_february
+    end
+
+    ####
+
+    rule imprecise_day_repeating_date
+      imprecise_day_repeating_date_long_month /
+      imprecise_day_repeating_date_short_month /
+      imprecise_day_repeating_date_february
+    end
+
+    rule imprecise_day_repeating_date_long_month
+      month_node:calendar_long_month
+      month_day_separator
+      imprecise:imprecise_day_of_long_month
+      <Acute::Nodes::RepeatingDateNode>
+      {
+        def day_number_node; imprecise.day_number_node; end
+      }
+    end
+
+    rule imprecise_day_repeating_date_short_month
+      month_node:calendar_short_month
+      month_day_separator
+      imprecise:imprecise_day_of_short_month
+      <Acute::Nodes::RepeatingDateNode>
+      {
+        def day_number_node; imprecise.day_number_node; end
+      }
+    end
+
+    rule imprecise_day_repeating_date_february
+      month_node:calendar_february
+      month_day_separator
+      imprecise:imprecise_day_of_february
+      <Acute::Nodes::RepeatingDateNode>
+      {
+        def day_number_node; imprecise.day_number_node; end
+      }
+    end
+
+    rule imprecise_repeating_date
+      imprecise_repeating_date_long_month /
+      imprecise_repeating_date_short_month /
+      imprecise_repeating_date_february
+    end
+
+    rule imprecise_repeating_date_long_month
+      open_parens
+      repeating_date_node:precise_repeating_date_long_month
+      close_parens
+    end
+
+    rule imprecise_repeating_date_short_month
+      open_parens
+      repeating_date_node:precise_repeating_date_short_month
+      close_parens
+    end
+
+    rule imprecise_repeating_date_february
+      open_parens
+      repeating_date_node:precise_repeating_date_february
+      close_parens
+    end
+
+    ####
+
+    rule qualified_day_of_long_month
+      imprecise_day_of_long_month / precise_day_of_long_month
+    end
+
+    rule imprecise_day_of_long_month
+      open_parens day_number_node:precise_day_of_long_month close_parens
+      {
+        def value; day_number_node.value; end
+        def precision; :month; end
+      }
+    end
+
+    rule qualified_day_of_short_month
+      imprecise_day_of_short_month / precise_day_of_short_month
+    end
+
+    rule imprecise_day_of_short_month
+      open_parens day_number_node:precise_day_of_short_month close_parens
+      { def value; day_number_node.value; end }
+    end
+
+    rule qualified_day_of_february
+      imprecise_day_of_february / precise_day_of_february
+    end
+
+    rule imprecise_day_of_february
+      open_parens day_number_node:precise_day_of_february close_parens
+      { def value; day_number_node.value; end }
+    end
+
+  end
+end
+

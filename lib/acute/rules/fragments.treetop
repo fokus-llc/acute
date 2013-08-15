@@ -1,0 +1,25 @@
+
+module Acute::Rules
+  grammar Fragments
+
+    rule fraction
+      fraction_early_prefix /
+      fraction_mid_prefix /
+      fraction_late_prefix
+    end
+
+    rule fraction_early_prefix
+      name:"early" space_or_dash
+    end
+
+    rule fraction_mid_prefix
+      name:"mid" space_or_dash
+    end
+
+    rule fraction_late_prefix
+      name:"late" space_or_dash
+    end
+
+  end
+end
+

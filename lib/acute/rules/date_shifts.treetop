@@ -1,0 +1,64 @@
+
+module Acute::Rules
+  grammar DateShifts
+
+    rule precise_fractional_shift
+      fractional_shift_node:precise_repeating_fractional_shift
+      shift_date_separator
+      date_node:precise_date
+      <Acute::Nodes::ShiftFragmentNode>
+    end
+
+    rule precise_repeating_fractional_shift
+      fraction_node:fraction repeating_shift_node:precise_repeating_shift
+    end
+
+    ####
+
+    rule precise_shift
+      repeating_shift_node:precise_repeating_shift
+      shift_date_separator
+      date_node:precise_date
+      <Acute::Nodes::DateShiftNode>
+    end
+
+    ####
+
+    # midnight?
+    rule precise_repeating_shift
+      shift_morning / shift_midday / shift_afternoon /
+      shift_evening / shift_night
+    end
+
+    rule shift_morning
+      "morning"
+      { def value; "morning"; end }
+    end
+
+    rule shift_midday
+      "mid" [ -]? "day"
+      { def value; "midday"; end }
+    end
+
+    rule shift_afternoon
+      "after" [ -]? "noon"
+      { def value; "afternoon"; end }
+    end
+
+    rule shift_evening
+      "evening"
+      { def value; "evening"; end }
+    end
+
+    rule shift_night
+      "night"
+      { def value; "night"; end }
+    end
+
+    rule shift_date_separator
+      conjunction_on / conjunction_comma / required_hspace
+    end
+
+  end
+end
+

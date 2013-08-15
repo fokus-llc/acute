@@ -1,0 +1,38 @@
+
+module Acute::Rules::Imprecise
+  grammar DateTimes
+
+    rule qualified_time
+      precise_time /
+      imprecise_time_of_date /
+      imprecise_time
+    end
+
+    rule imprecise_time_of_date
+      imprecise:imprecise_repeating_time
+      time_date_separator
+      date_node:precise_date
+      <Acute::Nodes::DateTimeNode>
+      {
+        def precision; :date; end
+        def repeating_time_node; imprecise.repeating_time_node; end
+      }
+    end
+
+    rule imprecise_time
+      open_parens imprecise:precise_time close_parens
+      <Acute::Nodes::DateTimeNode>
+      {
+        def repeating_time_node; imprecise.repeating_time_node; end
+        def date_node; imprecise.date_node; end
+        def precision; nil; end
+      }
+    end
+
+    rule imprecise_repeating_time
+      open_parens repeating_time_node:repeating_time close_parens
+    end
+
+  end
+end
+

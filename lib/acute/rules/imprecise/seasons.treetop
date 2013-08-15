@@ -1,0 +1,80 @@
+
+module Acute::Rules::Imprecise
+  grammar Seasons
+
+    rule qualified_fractional_season
+      precise_fractional_season /
+      imprecise_fractional_season_of_year /
+      imprecise_fractional_season
+    end
+
+    rule imprecise_fractional_season_of_year
+      fractional_season_node:imprecise_repeating_fractional_season
+      season_year_separator
+      year_node:precise_year
+      <Acute::Nodes::SeasonFragmentNode>
+      {
+        def precise_fractional_season?; false; end
+
+        def precision; :year; end
+      }
+    end
+
+    rule imprecise_fractional_season
+      open_parens imprecise:precise_fractional_season close_parens
+      <Acute::Nodes::SeasonFragmentNode>
+      {
+        def fractional_season_node; imprecise.fractional_season_node; end
+        def year_node; imprecise.year_node; end
+        def precise?; false; end
+
+        def precision; nil; end
+      }
+    end
+
+    rule imprecise_repeating_fractional_season
+      open_parens imprecise:precise_repeating_fractional_season close_parens
+      {
+        def fraction_node; imprecise.fraction_node; end
+        def repeating_season_node; imprecise.repeating_season_node; end
+      }
+    end
+
+    ####
+
+    rule qualified_season
+      precise_season / imprecise_season_of_year / imprecise_season
+    end
+
+    rule imprecise_season_of_year
+      imprecise:imprecise_repeating_season
+      season_year_separator
+      year_node:precise_year
+      <Acute::Nodes::SeasonNode>
+      {
+        def repeating_season_node; imprecise.season; end
+        def precise_season?; false; end
+
+        def precision; :year; end
+      }
+    end
+
+    rule imprecise_season
+      open_parens imprecise:precise_season close_parens
+      <Acute::Nodes::SeasonNode>
+      {
+        def repeating_season_node; imprecise.repeating_season_node; end
+        def year_node; imprecise.year_node; end
+        def precise?; false; end
+
+        def precision; nil; end
+      }
+    end
+
+    rule imprecise_repeating_season
+      open_parens season:precise_repeating_season close_parens
+    end
+
+  end
+end
+

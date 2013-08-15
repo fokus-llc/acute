@@ -1,0 +1,236 @@
+
+module Acute::Rules
+  grammar Months
+
+    rule precise_fractional_month
+      fractional_month_node:precise_repeating_fractional_month
+      month_year_separator
+      year_node:precise_year
+      <Acute::Nodes::MonthFragmentNode>
+    end
+
+    ####
+
+    rule precise_repeating_fractional_month
+      fraction_node:fraction repeating_month_node:precise_repeating_month
+    end
+
+    ####
+
+    rule precise_month
+      repeating_month_node:precise_repeating_month
+      month_year_separator
+      year_node:precise_year
+      <Acute::Nodes::MonthNode>
+    end
+
+    ####
+
+    rule precise_repeating_month
+      calendar_long_month / calendar_short_month / calendar_february
+    end
+
+    ####
+
+    rule calendar_january
+      calendar_january_en / calendar_january_en_abbr
+    end
+
+    rule calendar_january_en
+      "january"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 1; end }
+    end
+
+    rule calendar_january_en_abbr
+      "jan" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 1; end }
+    end
+
+    rule calendar_february
+      calendar_february_en / calendar_february_en_abbr
+    end
+
+    rule calendar_february_en
+      "february"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 2; end }
+    end
+
+    rule calendar_february_en_abbr
+      "feb" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 2; end }
+    end
+
+    rule calendar_march
+      calendar_march_en / calendar_march_en_abbr
+    end
+
+    rule calendar_march_en
+      "march"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 3; end }
+    end
+
+    rule calendar_march_en_abbr
+      "mar" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 3; end }
+    end
+
+    rule calendar_april
+      calendar_april_en / calendar_april_en_abbr
+    end
+
+    rule calendar_april_en
+      "april"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 4; end }
+    end
+
+    rule calendar_april_en_abbr
+      "apr" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 4; end }
+    end
+
+    rule calendar_may
+      "may"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 5; end }
+    end
+
+    rule calendar_june
+      calendar_june_en / calendar_june_en_abbr
+    end
+
+    rule calendar_june_en
+      "june"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 6; end }
+    end
+
+    rule calendar_june_en_abbr
+      "jun" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 6; end }
+    end
+
+    rule calendar_july
+      calendar_july_en / calendar_july_en_abbr
+    end
+
+    rule calendar_july_en
+      "july"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 7; end }
+    end
+
+    rule calendar_july_en_abbr
+      "jul" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 7; end }
+    end
+
+    rule calendar_august
+      calendar_august_en / calendar_august_en_abbr
+    end
+
+    rule calendar_august_en
+      "august"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 8; end }
+    end
+
+    rule calendar_august_en_abbr
+      "aug" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 8; end }
+    end
+
+    rule calendar_september
+      calendar_september_en / calendar_september_en_abbr
+    end
+
+    rule calendar_september_en
+      "september"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 9; end }
+    end
+
+    rule calendar_september_en_abbr
+      "sep" "t"? abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 9; end }
+    end
+
+    rule calendar_october
+      calendar_october_en / calendar_october_en_abbr
+    end
+
+    rule calendar_october_en
+      "october"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 10; end }
+    end
+
+    rule calendar_october_en_abbr
+      "oct" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 10; end }
+    end
+
+    rule calendar_november
+      calendar_november_en / calendar_november_en_abbr
+    end
+
+    rule calendar_november_en
+      "november"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 11; end }
+    end
+
+    rule calendar_november_en_abbr
+      "nov" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 11; end }
+    end
+
+    rule calendar_december
+      calendar_december_en / calendar_december_en_abbr
+    end
+
+    rule calendar_december_en
+      "december"
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 12; end }
+    end
+
+    rule calendar_december_en_abbr
+      "dec" abbreviated?
+      <Acute::Nodes::RepeatingMonthNode>
+      { def index; 12; end }
+    end
+
+    ####
+
+    rule calendar_long_month
+      calendar_january / calendar_march / calendar_may /
+      calendar_july / calendar_august / calendar_october / calendar_december
+    end
+
+    rule calendar_short_month
+      calendar_april / calendar_june / calendar_september / calendar_november
+    end
+
+    ####
+
+    rule month_year_separator
+      optional_hspace [,-] optional_hspace / required_hspace
+    end
+
+  end
+end
+
